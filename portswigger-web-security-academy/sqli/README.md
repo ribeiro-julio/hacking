@@ -122,6 +122,23 @@ To retrieve all the users: `category' UNION SELECT USERNAME_WQDOCJ,PASSWORD_NLFH
 
 ## Blind SQL injection labs
 
+### [Lab: Blind SQL injection with conditional responses](https://portswigger.net/web-security/sql-injection/blind/lab-conditional-responses)
+
+Vulnerable URL: https://domain/filter?category=category
+- This URL uses a TrackingId cookie to show a `Welcome back!` message. This cookie is vulnerable to SQL injection
+
+Test payload: `cookie' AND 1=1--` and `cookie' AND 1=2--`
+- When `AND 1=1--` is injected the welcome back message shows, but when `AND 1=2--` is injected, the message disappears. The message can be controlled by the injected payload, so the site is vulnerable
+
+To log in as administrator, we need to enumerate the password. To do this, first we discover the length of the password: `cookie' AND (SELECT username FROM users WHERE username = 'administrator' AND LENGTH(password) > [size]) = 'administrator'--`
+- We need to try this payload increasing the value of `[size]` until the welcome back message disappears from the screen, when that happens the query will be false and we will have the length of the password
+- The password is 20 characters long
+
+To enumerate the password, we need to check each character from it. ``
+- This function gets the character in the `[position]`th position of the string and compares with `[character]`. If the comparison is true, the welcome back message will appear in the screen. We need to compare each character from the password (changing the `[position]` value from `1` to `[size]`), with 
+a charater (brute force the character `[a-z||0-9]`)
+- The password is ``
+
 
 ## References
 - https://portswigger.net/web-security/sql-injection
