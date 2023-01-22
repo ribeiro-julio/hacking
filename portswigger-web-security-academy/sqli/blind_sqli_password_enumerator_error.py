@@ -42,9 +42,10 @@ def get_password(url, session, tracking_id, password_length, characters, error_r
       if response != error_response_code:
         password += character
         print(f"{position}/{password_length} characters...")
-        continue
-      if len(password) == password_length:
-        return [True, password]
+        break
+  
+  if len(password) == password_length:
+    return [True, password]
   
   print("failed to brute force the password")
   return [False, None]
