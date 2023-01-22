@@ -132,12 +132,15 @@ Test payload: `cookie' AND 1=1--` and `cookie' AND 1=2--`
 
 To log in as administrator, we need to enumerate the password. To do this, first we discover the length of the password: `cookie' AND (SELECT username FROM users WHERE username = 'administrator' AND LENGTH(password) > [size]) = 'administrator'--`
 - We need to try this payload increasing the value of `[size]` until the welcome back message disappears from the screen, when that happens the query will be false and we will have the length of the password
-- The password is 20 characters long
+- This step can be done with Burp Intruder, using the sniper attack type using the `[size]` as a numbers type payload or with a written script
+- The password is `20` characters long
 
-To enumerate the password, we need to check each character from it. ``
+To enumerate the password, we need to check each character from it. `cookie' AND SUBSTRING((SELECT password FROM users WHERE username = 'administrator'), [position], 1) = '[character]'--`
 - This function gets the character in the `[position]`th position of the string and compares with `[character]`. If the comparison is true, the welcome back message will appear in the screen. We need to compare each character from the password (changing the `[position]` value from `1` to `[size]`), with 
 a charater (brute force the character `[a-z||0-9]`)
-- The password is ``
+- This step can be done with Burp Intruder, using the cluster bomb attack type using the `[position]` as the first payload using the numbers type (from 1 to the size of the password, step 1) and the `[character]` as the second payload using the brute forcer type (selecting the characters to be tested and 1 as min and max length). This step can also be done with a script
+- The password is `xcanmptntagtdo2csy32`
+- To solve the lab, log in as `administrator:xcanmptntagtdo2csy32`
 
 
 ## References
