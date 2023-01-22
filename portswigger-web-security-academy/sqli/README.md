@@ -1,8 +1,10 @@
 # SQL injection
 
+SQL injection allows information retrieval from the database. It can appear in URL parameters, cookies, XML payloads, or any other element that interacts with a database query. This vulnerability can show the results of the injected query in the front end, or can be blind (the results are not shown). For blind vulnerabilities, some techniques can be used to get data from the database (conditional responses, conditional errors, time delays, out-of-band interaction...)
+
 [Cheat sheet](https://portswigger.net/web-security/sql-injection/cheat-sheet)
 
-## Error-based SQL injection labs
+## Non-blind SQL injection labs
 
 ### [Lab: SQL injection vulnerability in WHERE clause allowing retrieval of hidden data](https://portswigger.net/web-security/sql-injection/lab-retrieve-hidden-data)
 
@@ -130,14 +132,14 @@ Vulnerable URL: https://domain/filter?category=category
 Test payload: `cookie' AND 1=1--` and `cookie' AND 1=2--`
 - When `AND 1=1--` is injected the welcome back message shows, but when `AND 1=2--` is injected, the message disappears. The message can be controlled by the injected payload, so the site is vulnerable
 
-To log in as administrator, we need to enumerate the password. To do this, first we discover the length of the password: `cookie' AND (SELECT username FROM users WHERE username = 'administrator' AND LENGTH(password) > [size]) = 'administrator'--`
-- We need to try this payload increasing the value of `[size]` until the welcome back message disappears from the screen, when that happens the query will be false and we will have the length of the password
+To log in as administrator, we need to enumerate the password. To do this, first, we discover the length of the password: `cookie' AND (SELECT username FROM users WHERE username = 'administrator' AND LENGTH(password) > [size]) = 'administrator'--`
+- We need to try this payload by increasing the value of `[size]` until the welcome back message disappears from the screen, when that happens the query will be false and we will have the length of the password
 - This step can be done with Burp Intruder, using the sniper attack type using the `[size]` as a numbers type payload or with a written script
 - The password is `20` characters long
 
 To enumerate the password, we need to check each character from it. `cookie' AND SUBSTRING((SELECT password FROM users WHERE username = 'administrator'), [position], 1) = '[character]'--`
 - This function gets the character in the `[position]`th position of the string and compares with `[character]`. If the comparison is true, the welcome back message will appear in the screen. We need to compare each character from the password (changing the `[position]` value from `1` to `[size]`), with 
-a charater (brute force the character `[a-z||0-9]`)
+a character (brute force the character `[a-z||0-9]`)
 - This step can be done with Burp Intruder, using the cluster bomb attack type using the `[position]` as the first payload using the numbers type (from 1 to the size of the password, step 1) and the `[character]` as the second payload using the brute forcer type (selecting the characters to be tested and 1 as min and max length). This step can also be done with a script
 - The password is `xcanmptntagtdo2csy32`
 - To solve the lab, log in as `administrator:xcanmptntagtdo2csy32`
@@ -146,12 +148,12 @@ a charater (brute force the character `[a-z||0-9]`)
 ### [Lab: Blind SQL injection with conditional errors](https://portswigger.net/web-security/sql-injection/blind/lab-conditional-errors)
 
 Vulnerable URL: https://domain/filter?category=category
-- This URL does not provide any elements that interacts with the injected SQL, if we cause errors in the database, the page will render an error
+- This URL does not provide any elements that interact with the injected SQL, if we cause errors in the database, the page will render an error
 
 Test payload: `cookie' AND (SELECT CASE WHEN (1=1) THEN 'a' ELSE TO_CHAR(1/0) END FROM dual) = 'a'--` and `cookie' AND (SELECT CASE WHEN (1=2) THEN 'a' ELSE TO_CHAR(1/0) END FROM dual) = 'a'--`
-- When the first query is injected the page loads normally, but when the second query is injected and error page is loaded due a 500 error (server error, database error in that case). The site has unhandled database errors, making it vulnerable to blind SQL injection
+- When the first query is injected the page loads normally, but when the second query is injected an error page is loaded due to a 500 error (server error, database error in that case). The site has unhandled database errors, making it vulnerable to blind SQL injection
 
-To get the administrator password, the logic is the same as the previous lab. It can also be done through Burp Intruder or an script. The only thing that change are the queries (different technique and database)
+To get the administrator password, the logic is the same as in the previous lab. It can also be done through Burp Intruder or a script. The only thing that changed is the queries (different technique and database)
 - Query to get the password size: `' AND (SELECT CASE WHEN (LENGTH(password) > [size]) THEN 'a' ELSE TO_CHAR(1/0) END FROM users WHERE username = 'administrator') = 'a'--`
 - Query to enumerate the password: `' AND (SELECT CASE WHEN (SUBSTR(password, [position], 1) = '[character]') THEN 'a' ELSE TO_CHAR(1/0) END FROM users WHERE username = 'administrator') = 'a'--`
 
@@ -161,10 +163,10 @@ To solve the lab log in as `administrator:r17fdjbk4v1bdmqqisd8`
 ### [Lab: Blind SQL injection with time delays](https://portswigger.net/web-security/sql-injection/blind/lab-time-delays)
 
 Vulnerable URL: https://domain/filter?category=category
-- This URL does not provide any elements that interacts with the injected SQL neighter reacts with database errors
+- This URL does not provide any elements that interact with the injected SQL nor reacts with database errors
 
 Test payload: `'; SELECT CASE WHEN (1=1) THEN pg_sleep(10) ELSE pg_sleep(0) END--`
-- This payload triggers a time delay that can be confirmed with a longer page loading time
+- This payload triggers a time delay that can be confirmed with a long page loading time
 
 
 ### [Lab: Blind SQL injection with time delays and information retrieval](https://portswigger.net/web-security/sql-injection/blind/lab-time-delays-info-retrieval)
