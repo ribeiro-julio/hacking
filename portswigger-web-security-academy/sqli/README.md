@@ -122,6 +122,19 @@ To retrieve all the users: `category' UNION SELECT USERNAME_WQDOCJ,PASSWORD_NLFH
 - To solve the lab, log in as `administrator:v4v788550kfkkew3h2oi`
 
 
+### [Lab: SQL injection with filter bypass via XML encoding](https://portswigger.net/web-security/sql-injection/lab-sql-injection-with-filter-bypass-via-xml-encoding)
+
+Vulnerable URL: https://domain/product/stock
+- This URL uses an XML-encoded payload to send data to the database
+- There is a storeId element that evaluates expressions (such as sums)
+
+To solve the lab, we need to encode the payload in that element to bypass the WAF protection. The encoded payload to this lab is: `<@dec_entities>1 UNION SELECT username || ':' || password FROM users<@/dec_entities>`
+- If the query is written with 2 columns the response will be 0
+- This encoding was made with Burp Suite Hackverton extension: Extensions -> Hackvertor -> Encode -> dec_entities
+
+To solve the lab, log in as `administrator:jej4bpjjei2mawfb0xxr`
+
+
 ## Blind SQL injection labs
 
 ### [Lab: Blind SQL injection with conditional responses](https://portswigger.net/web-security/sql-injection/blind/lab-conditional-responses)
