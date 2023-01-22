@@ -1,6 +1,6 @@
 # SQL injection
 
-SQL injection allows information retrieval from the database. It can appear in URL parameters, cookies, XML payloads, or any other element that interacts with a database query. This vulnerability can show the results of the injected query in the front end, or can be blind (the results are not shown). For blind vulnerabilities, some techniques can be used to get data from the database (conditional responses, conditional errors, time delays, out-of-band interaction...)
+SQL injection allows information retrieval from the database. It can appear in URL parameters, cookies, XML payloads, or any other element that interacts with a database query. This vulnerability can show the results of the injected query in the front end, or can be blind (the results are not shown). For blind vulnerabilities, some techniques can be used to get data from the database (conditional responses, conditional errors, time delays, out-of-band interaction...). If the application doesn't respond to the vulnerability directly the query can be injected to the database for further execution, such as using the creating an account with a query to update some other user password (second-order SQL injection)
 
 [Cheat sheet](https://portswigger.net/web-security/sql-injection/cheat-sheet)
 
