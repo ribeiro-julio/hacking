@@ -128,7 +128,7 @@ Vulnerable URL: https://domain/product/stock
 - This URL uses an XML-encoded payload to send data to the database
 - There is a storeId element that evaluates expressions (such as sums)
 
-To solve the lab, we need to encode the payload in that element to bypass the WAF protection. The encoded payload to this lab is: `<@dec_entities>1 UNION SELECT username || ':' || password FROM users<@/dec_entities>`
+To get the user's information, we need to encode the payload in that element to bypass the WAF protection. The encoded payload to this lab is: `<@dec_entities>1 UNION SELECT username || ':' || password FROM users<@/dec_entities>`
 - If the query is written with 2 columns the response will be 0
 - This encoding was made with Burp Suite Hackverton extension: Extensions -> Hackvertor -> Encode -> dec_entities
 
