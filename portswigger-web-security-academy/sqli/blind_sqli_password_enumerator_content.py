@@ -1,3 +1,6 @@
+# This script was written to complete the lab https://portswigger.net/web-security/sql-injection/blind/lab-conditional-responses. This lab uses a 
+#   MySQL database and has a welcome message vulnerable to SQL injection throught a TrackingId cookie
+
 import requests
 import urllib.parse
 
