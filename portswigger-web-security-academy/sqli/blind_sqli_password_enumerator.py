@@ -47,7 +47,7 @@ def get_password(url, session, tracking_id, password_length, characters, true_re
 
 def main():
   DOMAIN = ""
-  URL = F"https://{DOMAIN}/filter?category=category"
+  URL = f"https://{DOMAIN}/filter?category=category"
   SESSION_COOKIE = ''
   TRACKINGID_COOKIE = ''
   CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789'
