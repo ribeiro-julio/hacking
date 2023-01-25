@@ -1,3 +1,7 @@
+# This script was written to complete the lab https://portswigger.net/web-security/authentication/multi-factor/lab-2fa-broken-logic. 
+#   The 2FA code of another user can be brute-force using other credentials
+
+
 import requests
 from bs4 import BeautifulSoup
 
