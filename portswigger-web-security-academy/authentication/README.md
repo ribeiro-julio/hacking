@@ -44,7 +44,6 @@ A Pitchfork-type attack can be used with a simple list of usernames (user to bre
 
 To solve the lab log in as `carlos:zxcvbn`
 
-
 ### [Lab: Username enumeration via account lock](https://portswigger.net/web-security/authentication/password-based/lab-username-enumeration-via-account-lock)
 
 Vulnerable URL: https://domain/login
@@ -55,8 +54,7 @@ To get the password we try every password for the user enumerated user. On almos
 
 To solve the lab, log in as `auction:mobilemail`
 
-
-[Lab: Broken brute-force protection, multiple credentials per request](https://portswigger.net/web-security/authentication/password-based/lab-broken-brute-force-protection-multiple-credentials-per-request)
+### [Lab: Broken brute-force protection, multiple credentials per request](https://portswigger.net/web-security/authentication/password-based/lab-broken-brute-force-protection-multiple-credentials-per-request)
 
 Vulnerable URL: https://domain/login
 
@@ -69,16 +67,61 @@ To solve the lab, modify the JSON to contain `carlos:["password1","password2"...
 
 ### [Lab: 2FA simple bypass](https://portswigger.net/web-security/authentication/multi-factor/lab-2fa-simple-bypass)
 
+Vulnerable URL: https://domain/login2
+
 This lab implements 2FA that can be easily bypassed. The login process has two steps: username and password form on https://domain/login and another view asking for the 2FA code https://domain/login2. The server registers a user as logged in after they completed the first step, so if we simply ignore the second view the user will be logged in already
 
 To solve the lab change the URL of the 2FA view to the home page. The user will be logged in already
 
-
 ### [Lab: 2FA broken logic](https://portswigger.net/web-security/authentication/multi-factor/lab-2fa-broken-logic)
+
+Vulnerable URL: https://domain/login2
 
 This lab implements 2FA with an unencrypted cookie that is used to define the user to be verified in the second step of the login process. This user can be changed to another user other than the user used to log in in the first step. This will generate a 2FA token for the user injected that can be broken with brute-force
 
 To solve the lab, log in as the valid user, change the `verify` cookie to the other user on all the requests and brute force the codes on the second step of the login
 
+### [Lab: 2FA bypass using a brute-force attack](https://portswigger.net/web-security/authentication/multi-factor/lab-2fa-bypass-using-a-brute-force-attack)
+
+TODO
+
 
 ## Other authentication mechanisms
+
+### [Lab: Brute-forcing a stay-logged-in cookie](https://portswigger.net/web-security/authentication/other-mechanisms/lab-brute-forcing-a-stay-logged-in-cookie)
+
+Vulnerable URL: any URL that has the `stay-logged-in` cookie such as https://domain/my-account
+
+This lab implements an unencrypted stay logged-in cookie used to access restricted information in the application. If a valid user logs in using this function, a cookie will be generated to identify the user logged in. This user is in the format `base64(username:md5(password))`. We can log out of the valid user, get the new session and try to guess the password based on this cookie trying to access a restricted page, such as https://domain/my-account
+
+To solve the lab, log in as `carlos:jennifer`
+
+### [Lab: Offline password cracking](https://portswigger.net/web-security/authentication/other-mechanisms/lab-offline-password-cracking)
+
+TODO
+
+### [Lab: Password reset broken logic](https://portswigger.net/web-security/authentication/other-mechanisms/lab-password-reset-broken-logic)
+
+Vulnerable URL: https://domain/forgot-password?temp-forgot-password-token=token
+
+This URL is used to reset the password for a user. The token generated can be used to reset the password of any user. The POST request for this URL has the token, user, and new password. If we change the user in the request for another user we change the password for that user
+
+To solve the lab, change the `username` in the request to change that users password
+
+### [Lab: Password reset poisoning via middleware](https://portswigger.net/web-security/authentication/other-mechanisms/lab-password-reset-poisoning-via-middleware)
+
+Vulnerable URL: https://domain/forgot-password
+
+This URL takes a username to send a reset password email. The lab provides a server view that can be used to poison the POST request on the URL. If the header `X-Forwarded-Host` is added to the POST request, the server will generate a token for that user to change the password, but the URL sent to the user's email will have the domain listed on the `X-Forwarded-Host` header. If the user clicks the link, a GET request will happen on that URL and the token will be visible on the logs since that token is in the URL parameters
+
+We can use that token to change the other user's password and solve the lab
+
+### [Lab: Password brute-force via password change](https://portswigger.net/web-security/authentication/other-mechanisms/lab-password-brute-force-via-password-change)
+
+Vulnerable URL: https://domain/my-account/change-password 
+
+This URL provides a password login that can be accessed by the logged user. If we try to reset the password with the correct current password and different new passwords the page will show a different new password message. If we try to reset the password with the wrong current password and different new passwords the page will show an incorrect current password message. If we try to reset the password with the wrong current password but matching new passwords, the page will log out and redirect to the login page
+
+To brute force the password from the user we need to modify the user in the request and keep the new passwords different, so the application doesn't log the user out. When the message shows the error saying that the new passwords don't match we tried the correct password
+
+To solve the lab log in as `carlos:hunter`
