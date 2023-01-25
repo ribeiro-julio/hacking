@@ -56,7 +56,29 @@ To get the password we try every password for the user enumerated user. On almos
 To solve the lab, log in as `auction:mobilemail`
 
 
+[Lab: Broken brute-force protection, multiple credentials per request](https://portswigger.net/web-security/authentication/password-based/lab-broken-brute-force-protection-multiple-credentials-per-request)
+
+Vulnerable URL: https://domain/login
+
+This lab implements user rate limiting to block brute-force attacks. The request sends a JSON payload to the server with the username (as a string) and a password (also as a string). To log in with the user `carlos` we can modify the password requests to send a list of strings instead of a single string. This will make the server return a valid login because the valid password is inside the list
+
+To solve the lab, modify the JSON to contain `carlos:["password1","password2"...]`
+
+
 ## Multifactor authentication
+
+### [Lab: 2FA simple bypass](https://portswigger.net/web-security/authentication/multi-factor/lab-2fa-simple-bypass)
+
+This lab implements 2FA that can be easily bypassed. The login process has two steps: username and password form on https://domain/login and another view asking for the 2FA code https://domain/login2. The server registers a user as logged in after they completed the first step, so if we simply ignore the second view the user will be logged in already
+
+To solve the lab change the URL of the 2FA view to the home page. The user will be logged in already
+
+
+### [Lab: 2FA broken logic](https://portswigger.net/web-security/authentication/multi-factor/lab-2fa-broken-logic)
+
+This lab implements 2FA with an unencrypted cookie that is used to define the user to be verified in the second step of the login process. This user can be changed to another user other than the user used to log in in the first step. This will generate a 2FA token for the user injected that can be broken with brute-force
+
+To solve the lab, log in as the valid user, change the `verify` cookie to the other user on all the requests and brute force the codes on the second step of the login
 
 
 ## Other authentication mechanisms
