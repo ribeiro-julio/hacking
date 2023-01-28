@@ -49,3 +49,25 @@ This lab implements protection to admin functionalities based on the user logged
 When an administrator changes the permission levels of a user he sends a POST request to https://domain/admin-roles with the `username` and `action` (upgrade or downgrade) as the request data. The POST request is secure, no normal user can make a successful POST request to this endpoint
 
 To bypass this protection, we can make a GET request to this endpoint with the https://domain/admin-roles?username=wiener&action=upgrade URL and leverage the permissions to the user wiener and solve the lab
+
+### [Lab: User ID controlled by request parameter](https://portswigger.net/web-security/access-control/lab-user-id-controlled-by-request-parameter)
+
+This lab has a horizontal privilege escalation on my account page. For a user logged in, the link to that page is https://domain/my-account?id=username. If a user logged in changes the value of the parameter `id` to another user they can see information on the other user
+
+To solve the lab, access https://domain/my-account?id=carlos logged in as `wiener`, and submit carlos API key
+
+### [Lab: User ID controlled by request parameter, with unpredictable user IDs](https://portswigger.net/web-security/access-control/lab-user-id-controlled-by-request-parameter-with-unpredictable-user-ids)
+
+This lab has a horizontal privilege escalation on my account page. For a user logged in, the link to that page is https://domain/my-account?id=uid. If a user logged in changes the value of the parameter `id` to another user `UID` they can see information on the other user
+
+To find the `UID`, open a post written by carlos, and click on his name. The page `https://domain/blogs?userId=569d594f-57ae-4030-b0ed-970e189e74b1` will open, containing he `UID`
+
+To solve the lab, access https://domain/my-account?id=569d594f-57ae-4030-b0ed-970e189e74b1 logged in as `wiener`, and submit carlos API key
+
+### [Lab: User ID controlled by request parameter with data leakage in redirect](https://portswigger.net/web-security/access-control/lab-user-id-controlled-by-request-parameter-with-data-leakage-in-redirect)
+
+This lab has a horizontal privilege escalation on my account page. For a user logged in, the link to that page is https://domain/my-account?id=username. If a user logged in changes the value of the parameter `id` to another user they get redirected to the login page
+
+If that request is made with Burp Repeater, the response will be received with the user API key before the redirect
+
+To solve the lab, submit carlos API key
